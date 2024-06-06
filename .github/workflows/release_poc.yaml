@@ -13,7 +13,9 @@ jobs:
             POM_VERSION: ${{steps.getVersion.outputs.POM_VERSION}}
         steps:
             - name: Get Current Version
-              run: echo "POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+              run: |
+                echo "POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+                echo "${{env.POM_VERSION}}"
             - name: Verify Is SNAPSHOT Version
               if: ${{ !contains(env.POM_VERSION, '-SNAPSHOT')}}
               run: | 

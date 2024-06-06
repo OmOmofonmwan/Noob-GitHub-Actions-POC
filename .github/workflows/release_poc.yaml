@@ -1,6 +1,6 @@
 name: Release Pipeline
 
-run-name: Releasing ${{ github.event.repository.name }}
+run-name: "Releasing ${{ github.event.repository.name }} #${{github.run_attempt}}"
 
 on:
     workflow_dispatch
@@ -22,7 +22,8 @@ jobs:
             - name: Get Current Version
               run: |
                 echo "POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-                echo "${{env.POM_VERSION}}"
+            - name: Print Version
+              run: echo ${{env.POM_VERSION}}
             - name: Verify Is SNAPSHOT Version
               if: ${{ !contains(env.POM_VERSION, '-SNAPSHOT')}}
               run: | 

@@ -11,6 +11,8 @@ jobs:
         if: github.ref == 'refs/heads/main' || github.ref_name == 'refs/heads/master'
         outputs:
             RELEASE_VERSION: ${{steps.splitVersion.outputs._0}}
+        env:
+            SNAPSHOTVERSION: ""
         steps:
             - name: Checkout Code Repository
               uses: actions/checkout@v4

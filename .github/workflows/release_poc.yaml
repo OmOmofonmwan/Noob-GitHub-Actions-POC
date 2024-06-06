@@ -1,6 +1,6 @@
 name: Release Pipeline
 
-run-name: "Releasing ${{ github.event.repository.name }} #${{github.run_attempt}}"
+run-name: "Releasing ${{ github.event.repository.name }} #${{github.run_id}}"
 
 on:
     workflow_dispatch
@@ -29,10 +29,15 @@ jobs:
               run: | 
                 echo "ERROR: Version is set to incompatible version ${{env.POM_VERSION}}. Only SNAPSHOT development versions can be converted to a release version."
                 exit 1
-            - name: Get Release Version
-              run: |
-                echo "RELEASE_VERSION=${env.POM_VERSION##-}" >> $GITHUB_ENV
-                echo "Release version ${{env.RELEASE_VERSION}}"
+            - name: Split version code
+              uses: xom9ikk/split@v1
+              id: splitVersion
+              with:
+                  string: ${{env.POM_VERSION}}
+                  separator: /
+                  limit: -1
+            - name: Print Release Version
+              run: echo "${{steps.splitVersion.outputs._0}}"
 
             
               

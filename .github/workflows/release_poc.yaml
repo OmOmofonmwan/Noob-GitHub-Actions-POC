@@ -34,7 +34,7 @@ jobs:
               id: splitVersion
               with:
                   string: ${{env.POM_VERSION}}
-                  separator: /
+                  separator: -SNAPSHOT
                   limit: -1
             - name: Print Release Version
               run: echo "${{steps.splitVersion.outputs._0}}"

@@ -5,6 +5,8 @@ run-name: "Releasing ${{ github.event.repository.name }} #${{github.run_number}}
 on:
     workflow_dispatch
 
+    # .${{steps.newSnapshotVersion.outputs.SnapshotVersion}}.${{steps.splitVersion.outputs._2}}
+
 jobs:
     initialization:
         runs-on: ubuntu-latest
@@ -51,8 +53,9 @@ jobs:
                 echo "SnapshotVersion=$((${{steps.splitVersionMinor.outputs._1}} + 1))" >> $GITHUB_OUTPUT
             - name: Print Versions
               run: |
-                echo " Snapshot Version -- ${{steps.splitVersion.outputs._0}}.${{steps.newSnapshotVersion.outputs.SnapshotVersion}}.${{steps.splitVersion.outputs._2}}"
+                echo " Snapshot Version -- ${{steps.splitVersion.outputs._0}}" 
                 echo " Release Version -- ${{steps.splitVersion.outputs._0}}"
+
 
             
               

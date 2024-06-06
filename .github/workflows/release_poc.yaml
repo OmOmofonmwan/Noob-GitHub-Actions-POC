@@ -42,9 +42,11 @@ jobs:
               run: echo "SNAPSHOTVERSION=${{steps.splitVersion.outputs._0}}" >> $GITHUB_ENV
             - name: Increment Snapshot Version
               id: newSnapshotVersion
+              env:
+                NUM: ${{env.SNAPSHOTVERSION}} 
               run: |
                 echo ${{env.SNAPSHOTVERSION}}
-                echo "SnapshotVersion=$((${{env.SNAPSHOTVERSION}} + 0.1.0))" >> $GITHUB_OUTPUT
+                echo "SnapshotVersion=$(($NUM + 0.1.0))" >> $GITHUB_OUTPUT
             - name: Print Versions
               run: |
                 echo " Snapshot Version -- ${{steps.newSnapshotVersion.outputs.SnapshotVersion}}"

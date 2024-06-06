@@ -38,15 +38,17 @@ jobs:
                   string: ${{env.POM_VERSION}}
                   separator: -SNAPSHOT
                   limit: -1
-            - name: Release Version Env
-              run: echo "SNAPSHOTVERSION=${{steps.splitVersion.outputs._0}}" >> $GITHUB_ENV
+            - name: Split version code - Minor
+              uses: xom9ikk/split@v1
+              id: splitVersionMinor
+              with:
+                string: ${{env.POM_VERSION}}
+                separator: .
+                limit: -1
             - name: Increment Snapshot Version
               id: newSnapshotVersion
-              env:
-                NUM: ${{env.SNAPSHOTVERSION}} 
               run: |
-                echo ${{env.SNAPSHOTVERSION}}
-                echo "SnapshotVersion=$(echo | awk `{print $NUM + 0.1.0}`)" >> $GITHUB_OUTPUT
+                echo "SnapShotVersion=$((${{steps.splitVersionMinor.outputs._1}}++))"
             - name: Print Versions
               run: |
                 echo " Snapshot Version -- ${{steps.newSnapshotVersion.outputs.SnapshotVersion}}"

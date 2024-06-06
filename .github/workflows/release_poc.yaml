@@ -1,6 +1,6 @@
 name: Release Pipeline
 
-run-name: "Releasing ${{ github.event.repository.name }} #${{github.run_id}}"
+run-name: "Releasing ${{ github.event.repository.name }} #${{github.run_number}}"
 
 on:
     workflow_dispatch
@@ -10,7 +10,7 @@ jobs:
         runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/main' || github.ref_name == 'refs/heads/master'
         outputs:
-            POM_VERSION: ${{steps.getVersion.outputs.POM_VERSION}}
+            POM_VERSION: ${{steps.splitVersion.outputs._0}}
         steps:
             - name: Checkout Code Repository
               uses: actions/checkout@v4

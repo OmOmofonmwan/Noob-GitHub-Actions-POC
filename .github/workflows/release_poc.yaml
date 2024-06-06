@@ -10,6 +10,7 @@ jobs:
         runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/main' || github.ref_name == 'refs/heads/master'
         outputs:
+            SNAPSHOT_VERSION: ${{steps.newSnapshotVersion.outputs.SnapshotVersion}}
             RELEASE_VERSION: ${{steps.splitVersion.outputs._0}}
         env:
             SNAPSHOTVERSION: ""
@@ -42,7 +43,7 @@ jobs:
               uses: xom9ikk/split@v1
               id: splitVersionMinor
               with:
-                string: ${{steps.splitVersion.outputs._0}}.${{steps.splitVersion.outputs._1}}.${{steps.splitVersion.outputs._2}}
+                string: ${{steps.splitVersion.outputs._0}}
                 separator: .
                 limit: -1
             - name: Increment Snapshot Version
@@ -53,6 +54,21 @@ jobs:
               run: |
                 echo " Snapshot Version -- ${{steps.newSnapshotVersion.outputs.SnapshotVersion}}"
                 echo " Release Version -- ${{steps.splitVersion.outputs._0}}"
-
+    
+    set_and_build_release:
+        runs-on: ubuntu-latest
+        needs: initialization
+        steps:
+            - name: Checkout Code Repository
+              uses: actions/checkout@v4
+            - name: Downloading Java
+              uses: actions/setup-java@v4
+              with:
+                java-version: '11'
+                distribution: 'temurin'
+            - name: Set Release Version
+              run: mvn version:set -DnewVersion=${{needs.initialization.outputs.RELEASE_VERSION}}
+            - name: Build Release Version
+              run: mvn clean install
             
               

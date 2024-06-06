@@ -46,7 +46,7 @@ jobs:
                 NUM: ${{env.SNAPSHOTVERSION}} 
               run: |
                 echo ${{env.SNAPSHOTVERSION}}
-                echo "SnapshotVersion=$(($NUM + 0.1.0))" >> $GITHUB_OUTPUT
+                echo "SnapshotVersion=$(($NUM + 0.1.0)) | bc" >> $GITHUB_OUTPUT
             - name: Print Versions
               run: |
                 echo " Snapshot Version -- ${{steps.newSnapshotVersion.outputs.SnapshotVersion}}"

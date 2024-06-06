@@ -10,7 +10,7 @@ jobs:
         runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/main' || github.ref_name == 'refs/heads/master'
         outputs:
-            POM_VERSION: ${{steps.splitVersion.outputs._0}}
+            RELEASE_VERSION: ${{steps.splitVersion.outputs._0}}
         steps:
             - name: Checkout Code Repository
               uses: actions/checkout@v4
@@ -36,8 +36,13 @@ jobs:
                   string: ${{env.POM_VERSION}}
                   separator: -SNAPSHOT
                   limit: -1
-            - name: Print Release Version
-              run: echo "${{steps.splitVersion.outputs._0}}"
+            - name: Increment Snapshot Version
+              id: newSnapshotVersion
+              run: echo "SnapshotVersion=$(($steps.splitVersion.outputs._0 + 0.1.0))" >> $GITHUB_OUTPUT
+            - name: Print Versions
+              run: |
+                echo " Snapshot Version -- ${{steps.newSnapshotVersion.outputs.SnapshotVersion}}"
+                echo " Release Version -- ${{steps.splitVersion.outputs._0}}"
 
             
               

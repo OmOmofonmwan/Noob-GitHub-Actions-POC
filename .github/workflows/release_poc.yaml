@@ -37,7 +37,7 @@ jobs:
                   separator: -SNAPSHOT
                   limit: -1
             - name: Release Version Env
-              run: "Get Version Env"
+              run: echo "Get Version Env"
               env:
                 SNAPSHOTVERSION: ${{steps.splitVersion.outputs._0}}
             - name: Increment Snapshot Version

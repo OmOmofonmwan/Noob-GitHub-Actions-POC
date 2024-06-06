@@ -36,9 +36,13 @@ jobs:
                   string: ${{env.POM_VERSION}}
                   separator: -SNAPSHOT
                   limit: -1
+            - name: Release Version Env
+              run: "Get Version Env"
+              env:
+                SNAPSHOTVERSION: ${{steps.splitVersion.outputs._0}}
             - name: Increment Snapshot Version
               id: newSnapshotVersion
-              run: echo "SnapshotVersion=$(($steps.splitVersion.outputs._0 + 0.1.0))" >> $GITHUB_OUTPUT
+              run: echo "SnapshotVersion=$(($SNAPSHOTVERSION + 0.1.0))" >> $GITHUB_OUTPUT
             - name: Print Versions
               run: |
                 echo " Snapshot Version -- ${{steps.newSnapshotVersion.outputs.SnapshotVersion}}"

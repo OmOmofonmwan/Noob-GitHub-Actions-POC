@@ -39,7 +39,7 @@ jobs:
                   separator: -SNAPSHOT
                   limit: -1
             - name: Release Version Env
-              run: echo "SNAPSHOT=${{steps.splitVersion.outputs._0}}" >> $GITHUB_ENV
+              run: echo "SNAPSHOTVERSION=${{steps.splitVersion.outputs._0}}" >> $GITHUB_ENV
             - name: Increment Snapshot Version
               id: newSnapshotVersion
               run: |

@@ -12,6 +12,13 @@ jobs:
         outputs:
             POM_VERSION: ${{steps.getVersion.outputs.POM_VERSION}}
         steps:
+            - name: Checkout Code Repository
+              uses: actions/checkout@v4
+            - name: Downloading Java
+              uses: actions/setup-java@v4
+              with:
+                java-version: '11'
+                distribution: 'temurin'
             - name: Get Current Version
               run: |
                 echo "POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV

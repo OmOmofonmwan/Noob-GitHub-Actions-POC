@@ -98,7 +98,7 @@ jobs:
               with:
                 java-version: '21'
                 distribution: 'temurin'
-            - name: Set Release Version
+            - name: Set Dev Version
               run: mvn -B versions:set -DnewVersion=${{needs.initialization.outputs.SNAPSHOT_VERSION}} -DgenerateBackupPoms=false
             - name: Commit & Push
               run: |
@@ -108,3 +108,28 @@ jobs:
                 git commit -m 'Set next dev version to ${{needs.initialization.outputs.SNAPSHOT_VERSION}}'
                 git push origin HEAD:main
                 git push --tags origin 
+
+    create_release:
+      name: Create Release
+      needs: 
+        - initialization
+        - set_build_and_tag_release
+        - set_dev_release
+      runs-on: ubuntu-latest
+      steps:
+            - name: Checkout code
+              uses: actions/checkout@master
+            - name: Create Release
+              id: create_release
+              uses: actions/create-release@latest
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+              with:
+                tag_name: ${{needs.initialization.outputs.RELEASE_VERSION}}
+                release_name: Release ${{needs.initialization.outputs.RELEASE_VERSION}}
+                body: |
+                  Changes in this Release
+                  - First Change
+                  - Second Change
+                draft: false
+                prerelease: false

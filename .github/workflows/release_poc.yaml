@@ -67,7 +67,7 @@ jobs:
                 java-version: '11'
                 distribution: 'temurin'
             - name: Set Release Version
-              run: mvn version:set -DnewVersion=${{needs.initialization.outputs.RELEASE_VERSION}}
+              run: mvn -B versions:set -DnewVersion=${{needs.initialization.outputs.RELEASE_VERSION}} -DgenerateBackupPoms=false
             - name: Build Release Version
               run: mvn clean install
             

@@ -16,14 +16,48 @@ on:
                 type: string
                 description: Enter Branch Name (Without feature/ prefix)
                 required: true
+env:
+    TRUNK_BRANCH: main
+    FEATURE_BRANCH: feature/${{github.event.inputs.feature_branch}}
+
 
 jobs:
     start_action:
         runs-on: ubuntu-latest
-        name: Start Action - feature/${{ github.event.inputs.feature_branch}} 
+        name: "Start Action - $FEATURE_BRANCH"
         steps:
-            - name: Testing
-              run: echo feature/${{github.event.inputs.feature_branch}}
-
+            - name: Checkout Code Repository
+              uses: actions/checkout@v4
+            - name: Downloading Java
+              uses: actions/setup-java@v4
+              with:
+                java-version: '21'
+                distribution: 'temurin'
+            - name: Get Current Version
+              run: |
+                echo "POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+            - name: Print Version
+              run: echo ${{env.POM_VERSION}}
+            - name: Split version code
+              uses: xom9ikk/split@v1
+              id: splitVersion
+              with:
+                  string: ${{env.POM_VERSION}}
+                  separator: -SNAPSHOT
+                  limit: -1
+            - name: Set New Unique Version
+              run: echo "uniqueVersion=${{steps.splitVersion.outputs._0}}-${{github.event.inputs.feature_branch}}-SNAPSHOT" >> $GITHUB_ENV
+            - name: Commit & Push
+              run: |
+                    git checkout main
+                    git pull -p
+                    git checkout -b $FEATURE_BRANCH
+                    mvn versions:set -DnewVersion=${{env.uniqueVersion}} -DgenerateBackupPoms=false
+                    git commit -am "Draft: Update feature version to ${{env.uniqueVersion}}"
+                    git push -u origin $FEATURE_BRANCH 
+            - name: create pull request
+              run: gh pr create -B $TRUNK_BRANCH -H $FEATURE_BRANCH --title 'Draft - Merge branch_to_merge into base_branch' --body 'Created by Github action'
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
             

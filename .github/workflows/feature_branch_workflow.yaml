@@ -1,6 +1,6 @@
 name: Feature Branch Pipeline
 
-run-name: "Feature Branch Pipeline"
+run-name: "Feature Branch Pipeline -- feature/${{github.event.inputs.feature_branch}} "
 
 on:
     workflow_dispatch:

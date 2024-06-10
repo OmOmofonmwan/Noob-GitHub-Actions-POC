@@ -49,7 +49,8 @@ jobs:
               run: echo "uniqueVersion=${{steps.splitVersion.outputs._0}}-${{github.event.inputs.feature_branch}}-SNAPSHOT" >> $GITHUB_ENV
             - name: Commit & Push
               run: |
-                    git checkout main
+                    git config user.name fda_shield_omoruyi
+                    git config user.email oomofonmwan93@gmail.com
                     git pull -p
                     git checkout -b $FEATURE_BRANCH
                     mvn versions:set -DnewVersion=${{env.uniqueVersion}} -DgenerateBackupPoms=false

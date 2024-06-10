@@ -109,3 +109,14 @@ jobs:
                         mvn versions:set -DnewVersion=$snapshotVersion -DgenerateBackupPoms=false
                         git commit -am "Branch Ready For Review - Reverted back to original snapshot version $snapshotVersion"
                         git push origin $FEATURE_BRANCH
+                - uses: jwalton/gh-find-current-pr@master
+                  id: findPr
+                  with:
+                     # Can be "open", "closed", or "all".  Defaults to "open".
+                    state: open
+                    # This will echo "Your PR is 7", or be skipped if there is no current PR.
+                - run: echo "Your PR is ${PR}"
+                  if: success() && steps.findPr.outputs.number
+                  run: echo ${{step.findPr.outputs.pr}}
+                  env:
+                     PR: ${{ steps.findPr.outputs.pr }}

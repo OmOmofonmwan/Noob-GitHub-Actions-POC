@@ -103,6 +103,7 @@ jobs:
             - name: Commit & Push
               run: |
                 git add .
+                git config user.name fda_shield_omoruyi
                 git commit -m 'Set next dev version to ${{needs.initialization.outputs.SNAPSHOT_VERSION}}'
                 git push origin HEAD:main
                 git push --tags origin 

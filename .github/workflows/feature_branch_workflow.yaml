@@ -25,6 +25,7 @@ jobs:
     start_action:
         runs-on: ubuntu-latest
         name: Start Action - feature/${{github.event.inputs.feature_branch}}
+        if: github.event.inputs.action == 'Start' && github.event.inputs.feature_branch != ''
         permissions:
             contents: write
             pull-requests: write
@@ -68,3 +69,43 @@ jobs:
                 title: Draft - ${{env.FEATURE_BRANCH}}
                 body: "**Currently work in progress - ${{env.FEATURE_BRANCH}}**"
                 draft: true
+    
+    finish_action:
+        runs-on: ubuntu-latest
+        name: Finish Action - feature/${{github.event.inputs.feature_branch}}
+        if: github.event.inputs.action == 'Finish' && github.event.inputs.feature_branch != ''
+        permissions:
+            contents: write
+            pull-requests: write
+        steps:
+                - name: Checkout Code Repository
+                  uses: actions/checkout@v4
+                - name: Downloading Java
+                  uses: actions/setup-java@v4
+                  with:
+                    java-version: '21'
+                    distribution: 'temurin'
+                - name: Get Current Version
+                  run: |
+                    echo "POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+                - name: Print Version
+                  run: echo ${{env.POM_VERSION}}
+                - name: Split version code
+                  uses: xom9ikk/split@v1
+                  id: splitVersion
+                  with:
+                      string: ${{env.POM_VERSION}}
+                      separator: "-"
+                      limit: -1
+                - name: Set SNAPSHOT Version
+                  run: echo "snapshotVersion=${{steps.splitVersion.outputs._0}}-SNAPSHOT" >> $GITHUB_ENV
+                - name: Commit & Push
+                  run: |
+                        git config user.name fda_shield_omoruyi
+                        git config user.email oomofonmwan93@gmail.com
+                        git checkout $TRUNK_BRANCH
+                        git pull -p
+                        git checkout $FEATURE_BRANCH
+                        mvn versions:set -DnewVersion=$snapshotVersion -DgenerateBackupPoms=false
+                        git commit -am "Branch Ready For Review - Reverted back to original snapshot version $snapshotVersion-SNAPSHOT"
+                        git push origin $snapshotVersion

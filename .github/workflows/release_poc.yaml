@@ -70,5 +70,15 @@ jobs:
               run: mvn -B versions:set -DnewVersion=${{needs.initialization.outputs.RELEASE_VERSION}} -DgenerateBackupPoms=false
             - name: Build Release Version
               run: mvn -version mvn clean install
+            - name: Create tag
+              uses: actions/github-script@v5
+              with:
+                script: |
+                  github.rest.git.createRef({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    ref: 'refs/tags/${{needs.initialization.outputs.RELEASE_VERSION}}',
+                    sha: context.sha
+                  })
             
               

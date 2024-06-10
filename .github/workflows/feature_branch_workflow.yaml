@@ -107,5 +107,5 @@ jobs:
                         git pull -p
                         git checkout $FEATURE_BRANCH
                         mvn versions:set -DnewVersion=$snapshotVersion -DgenerateBackupPoms=false
-                        git commit -am "Branch Ready For Review - Reverted back to original snapshot version $snapshotVersion-SNAPSHOT"
-                        git push origin $snapshotVersion
+                        git commit -am "Branch Ready For Review - Reverted back to original snapshot version $snapshotVersion"
+                        git push origin $FEATURE_BRANCH

@@ -3,7 +3,12 @@ name: Release Pipeline
 run-name: "Releasing ${{ github.event.repository.name }} #${{github.run_number}}"
 
 on:
-    workflow_dispatch
+    workflow_dispatch:
+      inputs:
+        feature_branch:
+          type: string
+          description: Enter Branch Name (Without feature/ prefix)
+          required: true
 
 jobs:
     initialization:

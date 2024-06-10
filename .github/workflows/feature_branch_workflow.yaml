@@ -1,0 +1,29 @@
+name: Feature Branch Pipeline
+
+run-name: "Feature Branch Pipeline"
+
+on:
+    workflow_dispatch:
+        inputs:
+            action:
+                type: choice
+                description: Action
+                options:
+                    - Start
+                    - Finish
+                required: true
+            feature_branch:
+                type: string
+                description: Enter Branch Name (Without feature/ prefix)
+                required: true
+
+jobs:
+    start_action:
+        runs-on: ubuntu-latest
+        name: Start Action - feature/${{ github.event.inputs.feature_branch}} 
+        steps:
+            - name: Testing
+              run: echo feature/${{github.event.inputs.feature_branch}}
+
+        
+            

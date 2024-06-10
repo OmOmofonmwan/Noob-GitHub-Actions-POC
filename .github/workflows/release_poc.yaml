@@ -69,6 +69,6 @@ jobs:
             - name: Set Release Version
               run: mvn -B versions:set -DnewVersion=${{needs.initialization.outputs.RELEASE_VERSION}} -DgenerateBackupPoms=false
             - name: Build Release Version
-              run: mvn clean install
+              run: mvn -version mvn clean install
             
               

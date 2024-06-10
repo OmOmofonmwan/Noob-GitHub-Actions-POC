@@ -24,7 +24,9 @@ env:
 jobs:
     start_action:
         runs-on: ubuntu-latest
-        name: "Start Action - $FEATURE_BRANCH"
+        name: Start Action - $FEATURE_BRANCH
+        permissions:
+            contents: write
         steps:
             - name: Checkout Code Repository
               uses: actions/checkout@v4

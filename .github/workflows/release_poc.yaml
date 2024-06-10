@@ -64,7 +64,7 @@ jobs:
             - name: Downloading Java
               uses: actions/setup-java@v4
               with:
-                java-version: '11'
+                java-version: '21'
                 distribution: 'temurin'
             - name: Set Release Version
               run: mvn -B versions:set -DnewVersion=${{needs.initialization.outputs.RELEASE_VERSION}} -DgenerateBackupPoms=false

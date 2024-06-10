@@ -24,7 +24,7 @@ env:
 jobs:
     start_action:
         runs-on: ubuntu-latest
-        name: Start Action - $FEATURE_BRANCH
+        name: Start Action - feature/${{github.event.inputs.feature_branch}}
         permissions:
             contents: write
         steps:
@@ -58,9 +58,12 @@ jobs:
                     mvn versions:set -DnewVersion=${{env.uniqueVersion}} -DgenerateBackupPoms=false
                     git commit -am "Draft: Update feature version to ${{env.uniqueVersion}}"
                     git push -u origin $FEATURE_BRANCH 
-            - name: create pull request
-              run: gh pr create -B $TRUNK_BRANCH -H $FEATURE_BRANCH --title 'Draft - Merge branch_to_merge into base_branch' --body 'Created by Github action'
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
-            
+            - name: Run the Action
+              uses: devops-infra/action-pull-request@v0.5.5
+              with:
+                github_token: ${{ secrets.GITHUB_TOKEN }}
+                source_branch: ${{env.FEATURE_BRANCH}}
+                target_branch: ${{env.TRUNK_BRANCH}}
+                title: Draft - ${{env.FEATURE_BRANCH}}
+                body: "**Currently work in progress - ${{env.FEATURE_BRANCH}}**"
+                draft: true

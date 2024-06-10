@@ -26,7 +26,7 @@ jobs:
         runs-on: ubuntu-latest
         name: Start Action - feature/${{github.event.inputs.feature_branch}}
         permissions:
-            contents: write
+            pull-requests: write
         steps:
             - name: Checkout Code Repository
               uses: actions/checkout@v4

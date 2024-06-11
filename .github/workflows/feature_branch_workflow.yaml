@@ -112,6 +112,9 @@ jobs:
     list_ps:
       needs: finish_action
       runs-on: ubuntu-latest
+      permissions:
+        contents: write
+        pull-requests: write
       steps:
         - name: Get Pull Request
           id: getPRList

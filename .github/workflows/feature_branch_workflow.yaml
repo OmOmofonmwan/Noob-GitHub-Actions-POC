@@ -110,9 +110,9 @@ jobs:
                         git commit -am "Branch Ready For Review - Reverted back to original snapshot version $snapshotVersion"
                         git push origin $FEATURE_BRANCH
     list_ps:
-     needs: finish_action
-     runs-on: ubuntu-latest
-     steps:
+      needs: finish_action
+      runs-on: ubuntu-latest
+      steps:
         - name: Get Pull Request
           id: getPRList
           uses: OmOmofonmwan/get-pr-number-based-off-branch-name@main
@@ -121,7 +121,7 @@ jobs:
             repository: ${{github.repository}}
             branch_name: ${{env.FEATURE_BRANCH}}
         - name: Update PR
-          if: steps.getPRList.outputs.pr_exists == true
+          if: steps.getPRList.outputs.pr_exists == 'true'
           run: |
            curl -L \
             -X PATCH \

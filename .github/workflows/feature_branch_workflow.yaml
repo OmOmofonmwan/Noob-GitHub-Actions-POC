@@ -21,25 +21,8 @@ env:
     FEATURE_BRANCH: feature/${{github.event.inputs.feature_branch}}
 
 
-jobs:
-    list_ps:
-        runs-on: ubuntu-latest
-        steps:
-            - name : Get Pull Requests
-              id: getPRList
-              uses: OmOmofonmwan/get-pr-number-based-off-branch-name@main
-              with:
-                    github_token: ${{secrets.GITHUB_TOKEN}}
-                    repository: ${{github.repository}}
-                    branch_name: ${{env.FEATURE_BRANCH}}
-            - run: |
-                echo ${{steps.getPRList.outputs.pr_number}}
-                echo ${{steps.getPRList.outputs.pr_exists}}
-                exit 1
-
-            
+jobs:        
     start_action:
-        needs: list_ps
         runs-on: ubuntu-latest
         name: Start Action - feature/${{github.event.inputs.feature_branch}}
         if: github.event.inputs.action == 'Start' && github.event.inputs.feature_branch != ''
@@ -126,14 +109,26 @@ jobs:
                         mvn versions:set -DnewVersion=$snapshotVersion -DgenerateBackupPoms=false
                         git commit -am "Branch Ready For Review - Reverted back to original snapshot version $snapshotVersion"
                         git push origin $FEATURE_BRANCH
-                - name : Get Pull Requests
-                  id: prList
-                  run: |
-                    gh api \
-                    -H "Accept: application/vnd.github+json" \
-                    -H "X-GitHub-Api-Version: 2022-11-28" \
-                     /repos/${{ github.repository }}/pulls
-                  env:
-                    GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-                - name: Print List
-                  run: echo ${{steps.prList.outputs}}
+    list_ps:
+     needs: finish_action
+     runs-on: ubuntu-latest
+     steps:
+        - name: Get Pull Request
+          id: getPRList
+          uses: OmOmofonmwan/get-pr-number-based-off-branch-name@main
+          with:
+            github_token: ${{secrets.GITHUB_TOKEN}}
+            repository: ${{github.repository}}
+            branch_name: ${{env.FEATURE_BRANCH}}
+        - name: Update PR
+          if: steps.getPRList.outputs.pr_exists == true
+          run: |
+           curl -L \
+            -X PATCH \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer <YOUR-TOKEN>" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            ${{steps.getPRList.outputs.pr_url}} \
+            -d '{"title":"Ready For Review - ${{env.FEATURE_BRANCH}}","body":"Ready For Review - ${{env.FEATURE_BRANCH}}","state":"open", "draft": "false"}'
+
+                     

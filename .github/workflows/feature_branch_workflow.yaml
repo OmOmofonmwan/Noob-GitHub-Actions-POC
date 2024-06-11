@@ -28,18 +28,19 @@ jobs:
             - name : Get Pull Requests
               id: prList
               run: |
-                 gh api \
+                 echo "PR_LIST=$(gh api \
                  -H "Accept: application/vnd.github+json" \
                  -H "X-GitHub-Api-Version: 2022-11-28" \
-                 /repos/${{ github.repository }}/pulls
+                 /repos/${{ github.repository }}/pulls) >> $GITHUB_OUTPUT
               env:
                 GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
             - name: Print List
               run: |
-                echo ${{steps.prList.outputs}}
+                echo ${{steps.prList.outputs.PR_LIST}}
                 exit 1
             
     start_action:
+        needs: list_ps
         runs-on: ubuntu-latest
         name: Start Action - feature/${{github.event.inputs.feature_branch}}
         if: github.event.inputs.action == 'Start' && github.event.inputs.feature_branch != ''

@@ -26,18 +26,17 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name : Get Pull Requests
-              id: prList
-              run: |
-                 echo "PR_LIST=$(gh api \
-                 -H "Accept: application/vnd.github+json" \
-                 -H "X-GitHub-Api-Version: 2022-11-28" \
-                 /repos/${{ github.repository }}/pulls)" >> $GITHUB_OUTPUT
-              env:
-                GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-            - name: Print List
-              run: |
-                echo ${{steps.prList.outputs.PR_LIST}}
+              id: getPRList
+              uses: OmOmofonmwan/get-pr-number-based-off-branch-name@main
+              with:
+                    github_token: ${{secrets.GITHUB_TOKEN}}
+                    repository: ${{github.repository}}
+                    branch_name: ${{env.FEATURE_BRANCH}}
+            - run: |
+                echo ${{steps.getPRList.outputs.pr_number}}
+                echo ${{steps.getPRList.outputs.pr_exists}}
                 exit 1
+
             
     start_action:
         needs: list_ps

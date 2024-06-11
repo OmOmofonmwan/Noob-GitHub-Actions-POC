@@ -135,7 +135,7 @@ jobs:
             -d '{"title":"Ready For Review - ${{env.FEATURE_BRANCH}}","body":"Ready For Review - ${{env.FEATURE_BRANCH}}","state":"open", "draft": "false"}'
         - name: Update PR - 2nd Version
           if: steps.getPRList.outputs.pr_exists == 'true'
-          run: gh pr ready ${{github.repository}} 9
+          run: gh pr ready 10
           env:
             GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 

@@ -124,7 +124,7 @@ jobs:
             repository: ${{github.repository}}
             branch_name: ${{env.FEATURE_BRANCH}}
         - name: Update PR
-          if: steps.getPRList.outputs.pr_exists == 'true'
+          if: steps.getPRList.outputs.pr_exists == 'false'
           run: |
            curl -L \
             -X PATCH \
@@ -133,5 +133,10 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             ${{steps.getPRList.outputs.pr_url}} \
             -d '{"title":"Ready For Review - ${{env.FEATURE_BRANCH}}","body":"Ready For Review - ${{env.FEATURE_BRANCH}}","state":"open", "draft": "false"}'
+        - name: Update PR - 2nd Version
+          if: steps.getPRList.outputs.pr_exists == 'true'
+          run: gh pr ready ${{steps.getPRList.outputs.pr_url}}
+          env:
+            GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
                      

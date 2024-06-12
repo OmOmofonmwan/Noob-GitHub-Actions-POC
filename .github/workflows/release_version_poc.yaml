@@ -24,7 +24,7 @@ jobs:
         outputs:
             _MAJOR: ${{steps.splitVersionMinor.outputs._0}}
             _MINOR: ${{steps.splitVersionMinor.outputs._1}}
-            _PATCH: ${{steps.splitVersionMinor.outputs._2}}
+            _PATCH: 10 ##${{steps.splitVersionMinor.outputs._2}}
         steps:
             - name: Checkout Code Repository
               uses: actions/checkout@v4

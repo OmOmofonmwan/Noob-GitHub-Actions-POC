@@ -109,7 +109,8 @@ jobs:
                         mvn versions:set -DnewVersion=$snapshotVersion -DgenerateBackupPoms=false
                         git commit -am "Branch Ready For Review - Reverted back to original snapshot version $snapshotVersion"
                         git push origin $FEATURE_BRANCH
-    list_ps:
+    
+    update_pull_request:
       needs: finish_action
       runs-on: ubuntu-latest
       permissions:
@@ -124,7 +125,7 @@ jobs:
             repository: ${{github.repository}}
             branch_name: ${{env.FEATURE_BRANCH}}
         - name: Update PR
-          if: steps.getPRList.outputs.pr_exists == 'false'
+          if: steps.getPRList.outputs.pr_exists == 'true'
           run: |
            curl -L \
             -X PATCH \
@@ -133,9 +134,9 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             ${{steps.getPRList.outputs.pr_url}} \
             -d '{"title":"Ready For Review - ${{env.FEATURE_BRANCH}}","body":"Ready For Review - ${{env.FEATURE_BRANCH}}","state":"open", "draft": "false"}'
-        - name: Update PR - 2nd Version
+        - name: Set PR To Ready
           if: steps.getPRList.outputs.pr_exists == 'true'
-          run: gh pr ready https://github.com/OmOmofonmwan/GitHub_Actions_POC/pull/11
+          run: gh pr ready ${{steps.getPRList.outputs.pr_html_url}}
           env:
             GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 

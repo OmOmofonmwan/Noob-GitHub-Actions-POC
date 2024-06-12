@@ -83,11 +83,11 @@ jobs:
               run: |
                 VERSION_PICKED=${{env.INCREMENTING_VERSION}}
                 if [[ "$VERSION_PICKED" == "Major" ]]; then
-                 echo "NEXT_SNAPSHOT_VERSION=${{env.NEW_VERSION_NUMBER}}.0.0" >> $GITHUB_ENV
+                 echo "NEXT_SNAPSHOT_VERSION=${{env.NEW_VERSION_NUMBER}}.0.0" >> $GITHUB_OUTPUT
                 elif [[ "$VERSION_PICKED" == "Minor" ]]; then
-                 echo "NEXT_SNAPSHOT_VERSION=${{needs.get_version.outputs._MAJOR}}.${{env.NEW_VERSION_NUMBER}}.0" >> $GITHUB_ENV
+                 echo "NEXT_SNAPSHOT_VERSION=${{needs.get_version.outputs._MAJOR}}.${{env.NEW_VERSION_NUMBER}}.0" >> $GITHUB_OUTPUT
                 else
-                 echo "NEXT_SNAPSHOT_VERSION=${{needs.get_version.outputs._MAJOR}}.${{needs.get_version.outputs._MINOR}}.${{env.NEW_VERSION_NUMBER}}" >> $GITHUB_ENV
+                 echo "NEXT_SNAPSHOT_VERSION=${{needs.get_version.outputs._MAJOR}}.${{needs.get_version.outputs._MINOR}}.${{env.NEW_VERSION_NUMBER}}" >> $GITHUB_OUTPUT
                 fi
                  
                  

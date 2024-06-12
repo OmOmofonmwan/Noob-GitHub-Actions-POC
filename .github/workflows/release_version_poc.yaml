@@ -85,7 +85,7 @@ jobs:
                  separator: -SNAPSHOT
                  limit: -1
             - name: If Release Version Is Entered And Contains SNAPSHOT - Set Enviroment
-              if: env.DEVELOPMENT_VERSION_INPUT != '' && contains(${{env.DEVELOPMENT_VERSION_INPUT}}, '-SNAPSHOT')  
+              if: env.RELEASE_VERSION_INPUT != '' && contains(${{env.RELEASE_VERSION_INPUT}}, '-SNAPSHOT')  
               run: echo "NEXT_RELEASE_VERSION=${{steps.splitVersionRelease.outputs._0}}"
             - name: Print Versions
               run: |

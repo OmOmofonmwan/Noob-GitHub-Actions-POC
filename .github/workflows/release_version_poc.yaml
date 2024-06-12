@@ -55,7 +55,7 @@ jobs:
             - name: Set Release Version
               run: echo "NEXT_RELEASE_VERSION=${{env.POM_VERSION}}" >> $GITHUB_ENV
             - name: If Developemt Version Is Entered And Does Not Contains SNAPSHOT
-              if: env.DEVELOPMENT_VERSION_INPUT != '' && !contains(${{env.DEVELOPMENT_VERSION_INPUT}}, '-SNAPSHOT')
+              if: ${{env.DEVELOPMENT_VERSION_INPUT}} != '' && !contains(${{env.DEVELOPMENT_VERSION_INPUT}}, '-SNAPSHOT')
               run: "Setting Next Dev To ${{env.NEXT_DEV_VERSION}}"
               env:
                 NEXT_DEV_VERSION: ${{env.DEVELOPMENT_VERSION_INPUT}}

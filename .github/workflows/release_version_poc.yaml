@@ -61,12 +61,13 @@ jobs:
             - name: Set Env - Major
               shell: bash
               run: |
-                if [["${{env.INCREMENTING_VERSION}}" == "MAJOR"]]; then
+                if [["${{env.INCREMENTING_VERSION}}" == "Major"]]; then
                   echo "VERSION_NUMBER=${{needs.get_version.outputs._MAJOR}}" >> $GITHUB_ENV
-                elif [["${{env.INCREMENTING_VERSION}}" == "MINOR"]]; then
+                elif [["${{env.INCREMENTING_VERSION}}" == "Minor"]]; then
                  echo "VERSION_NUMBER=${{needs.get_version.outputs._MINOR}}" >> $GITHUB_ENV
                 else
                  echo "VERSION_NUMBER=${{needs.get_version.outputs._PATCH}}" >> $GITHUB_ENV
+                fi
             - name: Print Version
               run: echo ${{env.INCREMENTING_VERSION}} -- ${{env.VERION_NUMVER}}
               

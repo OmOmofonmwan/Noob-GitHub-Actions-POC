@@ -120,7 +120,56 @@ jobs:
                         sha: context.sha
                     })
             
+    
+    set_next_dev:
+            runs-on: ubuntu-latest
+            name: Set Next Snapshot Version
+            needs: 
+               - increment_version
+               - set_build_and_tag_release
+            permissions:
+                contents: write
+            steps:
+                - name: Checkout Code Repository
+                  uses: actions/checkout@v4
+                - name: Downloading Java
+                  uses: actions/setup-java@v4
+                  with:
+                    java-version: '21'
+                    distribution: 'temurin'
+                - name: Set Dev Version
+                  run: mvn -B versions:set -DnewVersion=${{needs.increment_version.outputs.NEXT_SNAPSHOT_VERSION}} -DgenerateBackupPoms=false
+                - name: Commit & Push
+                  run: |
+                        git add .
+                        git config user.name fda_shield_omoruyi
+                        git config user.email oomofonmwan93@gmail.com
+                        git commit -m 'Set next dev version to ${{needs.increment_version.outputs.NEXT_SNAPSHOT_VERSION}}'
+                        git push origin HEAD:main
+                        git push --tags origin 
               
               
-            
+    create_release:
+        name: Create Release
+        permissions: write-all
+        needs: 
+            - increment_version
+            - set_build_and_tag_release
+            - set_next_dev
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@master
+            - name: Create Release
+              id: create_release
+              uses: actions/create-release@latest
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+              with:
+                tag_name: ${{needs.increment_version.outputs.RELEASE_VERSION}}
+                release_name: Release ${{needs.increment_version.outputs.RELEASE_VERSION}}
+                body: |
+                     New Release Version ${{needs.increment_version.outputs.RELEASE_VERSION}}
+                draft: false
+                prerelease: false
     

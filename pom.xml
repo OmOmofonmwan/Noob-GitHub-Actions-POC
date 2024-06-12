@@ -6,7 +6,7 @@
 
     <groupId>org.example</groupId>
     <artifactId>GitHub-Actions-POC</artifactId>
-    <version>3.1.0</version>
+    <version>3.1.1</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

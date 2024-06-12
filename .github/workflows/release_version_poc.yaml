@@ -22,15 +22,75 @@ on:
 
 env:
     INCREMENTING_VERSION: ${{github.event.inputs.action}}
+    DEVELOPMENT_VERSION_INPUT: ${{github.event.inputs.development_version}}
+    RELEASE_VERSION_INPUT: ${{github.event.inputs.release_version}}
 
 jobs:
     get_custom_inputs:
         runs-on: ubuntu-latest
         name: Get Custom Inputs
-        if: ${{github.event.inputs.action}} == "Custom" 
+        env:
+            NEXT_DEV_VERSION: ""
+            NEXT_RELEASE_VERSION: ""
+        if: ${{github.event.inputs.action}} == "Custom"
         steps:
-            - name: Get Dev Version Input Remove Snapshot
-              if: ${{github.event.inputs.development_version}} !=
+            - name: Stops If Fields Are Empty
+              if: ${{env.DEVELOPMENT_VERSION_INPUT}} == "" && ${{env.RELEASE_VERSION_INPUT}} == ""
+              run: |
+                echo "Please Enter A Development Or Release Version"
+                exit 1
+            - name: Checkout Code Repository
+              uses: actions/checkout@v4
+            - name: Downloading Java
+              uses: actions/setup-java@v4
+              with:
+                java-version: '11'
+                distribution: 'temurin'
+            - name: Get Current Version
+              run: |
+                echo "POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+            - name: Set Release Version
+              run: echo "NEXT_RELEASE_VERSION=${{env.POM_VERSION}}" >> $GITHUB_ENV
+            - name: If Developemt Version Is Entered And Does Not Contains SNAPSHOT
+              if: ${{env.DEVELOPMENT_VERSION_INPUT}} != "" && !contains(${{env.DEVELOPMENT_VERSION_INPUT}}, '-SNAPSHOT')
+              run: "Setting Next Dev To ${{env.NEXT_DEV_VERSION}}"
+              env:
+                NEXT_DEV_VERSION: ${{env.DEVELOPMENT_VERSION_INPUT}}
+            - name: If Developemt Version Is Entered And Contains SNAPSHOT
+              if: ${{env.DEVELOPMENT_VERSION_INPUT}} != "" && contains(${{env.DEVELOPMENT_VERSION_INPUT}}, '-SNAPSHOT')
+              uses: xom9ikk/split@v1
+              id: splitVersionDev
+              with:
+                  string: ${{env.DEVELOPMENT_VERSION_INPUT}}
+                  separator: -SNAPSHOT
+                  limit: -1
+            - name: If Developemt Version Is Entered And Contains SNAPSHOT - Set Enviroment
+              if: ${{env.DEVELOPMENT_VERSION_INPUT}} != "" && contains(${{env.DEVELOPMENT_VERSION_INPUT}}, '-SNAPSHOT')  
+              run: echo "NEXT_DEV_VERSION=${{steps.splitVersionDev.outputs._0}}"
+            - name: If Release Version Is Entered And Does Not Contains SNAPSHOT
+              if: ${{env.RELEASE_VERSION_INPUT}} != "" && !contains(${{env.RELEASE_VERSION_INPUT}}, '-SNAPSHOT')
+              run: "Setting Next Release To ${{env.NEXT_RELEASE_VERSION}}"
+              env:
+                NEXT_RELEASE_VERSION: ${{env.RELEASE_VERSION_INPUT}}
+            - name: If Release Version Is Entered And Contains SNAPSHOT
+              if: ${{env.RELEASE_VERSION_INPUT}} != "" && contains(${{env.RELEASE_VERSION_INPUT}}, '-SNAPSHOT')
+              uses: xom9ikk/split@v1
+              id: splitVersionRelease
+              with:
+                 string: ${{env.RELEASE_VERSION_INPUT}}
+                 separator: -SNAPSHOT
+                 limit: -1
+            - name: If Release Version Is Entered And Contains SNAPSHOT - Set Enviroment
+              if: ${{env.DEVELOPMENT_VERSION_INPUT}} != "" && contains(${{env.DEVELOPMENT_VERSION_INPUT}}, '-SNAPSHOT')  
+              run: echo "NEXT_RELEASE_VERSION=${{steps.splitVersionRelease.outputs._0}}"
+            - name: Run Release Workflow
+              uses: OmOmofonmwan/GitHub_Actions_POC/.github/workflows/reusable_release_poc.yaml@main
+              with:
+                release_version: ${{env.NEXT_RELEASE_VERSION}}
+                snapshot_version: ${{env.NEXT_DEV_VERSION}}
+
+            
+
     get_version:
         runs-on: ubuntu-latest
         name: Get Version

@@ -38,7 +38,7 @@ jobs:
         if: github.event.inputs.action == 'Custom'
         steps:
             - name: Stops If Fields Are Empty
-              if: ${{env.DEVELOPMENT_VERSION_INPUT}} == '' && ${{env.RELEASE_VERSION_INPUT}} == ''
+              if: env.DEVELOPMENT_VERSION_INPUT == '' && env.RELEASE_VERSION_INPUT == ''
               run: |
                 echo "Please Enter A Development Or Release Version"
                 exit 1
@@ -55,12 +55,12 @@ jobs:
             - name: Set Release Version
               run: echo "NEXT_RELEASE_VERSION=${{env.POM_VERSION}}" >> $GITHUB_ENV
             - name: If Developemt Version Is Entered And Does Not Contains SNAPSHOT
-              if: ${{env.DEVELOPMENT_VERSION_INPUT}} != '' && !contains(${{env.DEVELOPMENT_VERSION_INPUT}}, '-SNAPSHOT')
+              if: env.DEVELOPMENT_VERSION_INPUT != '' && !contains(${{env.DEVELOPMENT_VERSION_INPUT}}, '-SNAPSHOT')
               run: "Setting Next Dev To ${{env.NEXT_DEV_VERSION}}"
               env:
                 NEXT_DEV_VERSION: ${{env.DEVELOPMENT_VERSION_INPUT}}
             - name: If Developemt Version Is Entered And Contains SNAPSHOT
-              if: ${{env.DEVELOPMENT_VERSION_INPUT}} != '' && contains(${{env.DEVELOPMENT_VERSION_INPUT}}, '-SNAPSHOT')
+              if: env.DEVELOPMENT_VERSION_INPUT != '' && contains(${{env.DEVELOPMENT_VERSION_INPUT}}, '-SNAPSHOT')
               uses: xom9ikk/split@v1
               id: splitVersionDev
               with:
@@ -68,15 +68,15 @@ jobs:
                   separator: -SNAPSHOT
                   limit: -1
             - name: If Developemt Version Is Entered And Contains SNAPSHOT - Set Enviroment
-              if: ${{env.DEVELOPMENT_VERSION_INPUT}} != '' && contains(${{env.DEVELOPMENT_VERSION_INPUT}}, '-SNAPSHOT')  
+              if: env.DEVELOPMENT_VERSION_INPUT != '' && contains(${{env.DEVELOPMENT_VERSION_INPUT}}, '-SNAPSHOT')  
               run: echo "NEXT_DEV_VERSION=${{steps.splitVersionDev.outputs._0}}"
             - name: If Release Version Is Entered And Does Not Contains SNAPSHOT
-              if: ${{env.RELEASE_VERSION_INPUT}} != '' && !contains(${{env.RELEASE_VERSION_INPUT}}, '-SNAPSHOT')
+              if: env.RELEASE_VERSION_INPUT != '' && !contains(${{env.RELEASE_VERSION_INPUT}}, '-SNAPSHOT')
               run: "Setting Next Release To ${{env.NEXT_RELEASE_VERSION}}"
               env:
                 NEXT_RELEASE_VERSION: ${{env.RELEASE_VERSION_INPUT}}
             - name: If Release Version Is Entered And Contains SNAPSHOT
-              if: ${{env.RELEASE_VERSION_INPUT}} != '' && contains(${{env.RELEASE_VERSION_INPUT}}, '-SNAPSHOT')
+              if: env.RELEASE_VERSION_INPUT != '' && contains(${{env.RELEASE_VERSION_INPUT}}, '-SNAPSHOT')
               uses: xom9ikk/split@v1
               id: splitVersionRelease
               with:
@@ -84,7 +84,7 @@ jobs:
                  separator: -SNAPSHOT
                  limit: -1
             - name: If Release Version Is Entered And Contains SNAPSHOT - Set Enviroment
-              if: ${{env.DEVELOPMENT_VERSION_INPUT}} != '' && contains(${{env.DEVELOPMENT_VERSION_INPUT}}, '-SNAPSHOT')  
+              if: env.DEVELOPMENT_VERSION_INPUT != '' && contains(${{env.DEVELOPMENT_VERSION_INPUT}}, '-SNAPSHOT')  
               run: echo "NEXT_RELEASE_VERSION=${{steps.splitVersionRelease.outputs._0}}"
            
                 

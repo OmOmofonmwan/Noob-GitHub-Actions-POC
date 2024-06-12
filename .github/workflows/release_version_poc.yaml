@@ -61,9 +61,10 @@ jobs:
             - name: Set Env - Major
               shell: bash
               run: |
-                if [["${{env.INCREMENTING_VERSION}}" == "Major"]]; then
+
+                if [""${{env.INCREMENTING_VERSION}}"" == "Major"]; then
                   echo "VERSION_NUMBER=${{needs.get_version.outputs._MAJOR}}" >> $GITHUB_ENV
-                elif [["${{env.INCREMENTING_VERSION}}" == "Minor"]]; then
+                elif [""${{env.INCREMENTING_VERSION}}"" == "Minor"]; then
                  echo "VERSION_NUMBER=${{needs.get_version.outputs._MINOR}}" >> $GITHUB_ENV
                 else
                  echo "VERSION_NUMBER=${{needs.get_version.outputs._PATCH}}" >> $GITHUB_ENV

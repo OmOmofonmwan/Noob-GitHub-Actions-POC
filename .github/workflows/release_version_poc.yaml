@@ -1,0 +1,75 @@
+name: Increment Release Version Pipeline
+
+run-name: "Incrementing Release Version -- ${{github.event.inputs.action}}"
+
+on:
+    workflow_dispatch:
+        inputs:
+            action:
+                type: choice
+                description: Version To Increment 
+                options:
+                    - Major
+                    - Minor
+                    - Patch
+                required: true
+
+env:
+    INCREMENTING_VERSION: ${{github.event.inputs.action}}
+
+jobs:
+    get_version:
+        runs-on: ubuntu-latest
+        name: Get Version
+        outputs:
+            _MAJOR: ${{steps.splitVersionMinor.outputs._0}}
+            _MINOR: ${{steps.splitVersionMinor.outputs._1}}
+            _PATCH: ${{steps.splitVersionMinor.outputs._2}}
+        steps:
+            - name: Checkout Code Repository
+              uses: actions/checkout@v4
+            - name: Downloading Java
+              uses: actions/setup-java@v4
+              with:
+                java-version: '11'
+                distribution: 'temurin'
+            - name: Get Current Version
+              run: |
+                echo "POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+            - name: Print Version
+              run: echo ${{env.POM_VERSION}}
+            - name: Split version code
+              uses: xom9ikk/split@v1
+              id: splitVersion
+              with:
+                  string: ${{env.POM_VERSION}}
+                  separator: -SNAPSHOT
+                  limit: -1
+            - name: Split version code - Minor
+              uses: xom9ikk/split@v1
+              id: splitVersionMinor
+              with:
+                string: ${{steps.splitVersion.outputs._0}}
+                separator: .
+                limit: -1
+    
+    increment_version:
+        runs-on: ubuntu-latest
+        needs: get_version
+        name: "Increment ${{github.event.inputs.action}} Version"
+        steps:
+            - name: Set Env - Major
+              shell: bash
+              run: |
+                if [["${{env.INCREMENTING_VERSION}}" == "MAJOR"]]; then
+                  echo "VERSION_NUMBER=${{needs.get_version.outputs._MAJOR}}" >> $GITHUB_ENV
+                elif [["${{env.INCREMENTING_VERSION}}" == "MINOR"]]; then
+                 echo "VERSION_NUMBER=${{needs.get_version.outputs._MINOR}}" >> $GITHUB_ENV
+                else
+                 echo "VERSION_NUMBER=${{needs.get_version.outputs._PATCH}}" >> $GITHUB_ENV
+            - name: Print Version
+              run: echo ${{env.INCREMENTING_VERSION}} -- ${{env.VERION_NUMVER}}
+              
+              
+            
+    

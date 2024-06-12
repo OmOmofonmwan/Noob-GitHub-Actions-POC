@@ -69,7 +69,7 @@ jobs:
                  echo "VERSION_NUMBER=${{needs.get_version.outputs._PATCH}}" >> $GITHUB_ENV
                 fi
             - name: Print Version
-              run: echo ${{env.INCREMENTING_VERSION}} -- ${{env.VERION_NUMVER}}
+              run: echo ${{env.INCREMENTING_VERSION}} -- ${{env.VERION_NUMBER}}
               
               
             

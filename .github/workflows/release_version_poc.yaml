@@ -87,6 +87,10 @@ jobs:
             - name: If Release Version Is Entered And Contains SNAPSHOT - Set Enviroment
               if: env.DEVELOPMENT_VERSION_INPUT != '' && contains(${{env.DEVELOPMENT_VERSION_INPUT}}, '-SNAPSHOT')  
               run: echo "NEXT_RELEASE_VERSION=${{steps.splitVersionRelease.outputs._0}}"
+            - name: Print Versions
+              run: |
+                echo "Next Dev Version: ${{env.NEXT_DEV_VERSION}}"
+                echo "Next Release Version: ${{env.NEXT_RELEASE_VERSION}}"
            
                 
     calling-release-workflow:

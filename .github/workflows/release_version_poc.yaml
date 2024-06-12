@@ -62,7 +62,7 @@ jobs:
               shell: bash
               run: |
 
-                VERSION_PICKED= ${{env.INCREMENTING_VERSION}}
+                VERSION_PICKED=${{env.INCREMENTING_VERSION}}
                 if [["$VERSION_PICKED" == "Major"]]; then
                   echo "VERSION_NUMBER=${{needs.get_version.outputs._MAJOR}}" >> $GITHUB_ENV
                 elif [["$VERSION_PICKED" == "Minor"]]; then

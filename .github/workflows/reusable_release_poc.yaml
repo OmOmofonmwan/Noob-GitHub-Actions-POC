@@ -18,6 +18,10 @@ jobs:
         permissions:
           contents: write
         steps:
+            - name: Print Versions
+              run: |
+                echo "Next Dev Version: ${{github.event.inputs.snapshot_version}}"
+                echo "Next Release Version: ${{github.event.inputs.release_version}}"
             - name: Checkout Code Repository
               uses: actions/checkout@v4
             - name: Downloading Java

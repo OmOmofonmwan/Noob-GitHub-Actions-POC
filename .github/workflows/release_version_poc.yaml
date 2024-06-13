@@ -48,7 +48,7 @@ jobs:
         uses: OmOmofonmwan/GitHub_Actions_POC/.github/workflows/reusable_release_poc.yaml@main
         with:
             release_version: ${{github.event.inputs.release_version}}
-            snapshot_version: ${{github.event.inputs.development_version}}
+            development_version: ${{github.event.inputs.development_version}}
 
             
 

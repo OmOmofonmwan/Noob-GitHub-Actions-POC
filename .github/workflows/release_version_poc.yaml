@@ -47,8 +47,8 @@ jobs:
         permissions: write-all
         uses: OmOmofonmwan/GitHub_Actions_POC/.github/workflows/reusable_release_poc.yaml@main
         with:
-            release_version: ${{env.RELEASE_VERSION_INPUT}}
-            snapshot_version: ${{env.DEVELOPMENT_VERSION_INPUT}}
+            release_version: ${{github.event.inputs.release_version}}
+            snapshot_version: ${{github.event.inputs.development_version}}
 
             
 

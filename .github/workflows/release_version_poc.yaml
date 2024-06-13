@@ -15,8 +15,10 @@ on:
                     - Custom
                 required: true
             release_version:
+                type: string
                 description: Name of release. May follow SemVer (Major.Minor.Patch) format
             development_version:
+                type: string
                 description: Name of next development version. Must follow SemVer + "-" + <TEXT> (Major.Minor.Patch-TEXT) format
             
 

@@ -8,7 +8,7 @@ on:
         release_version:
           type: string
           required: true
-        snapshot_version:
+        development_version:
            type: string
            required: true
 
@@ -20,7 +20,7 @@ jobs:
         steps:
             - name: Print Versions
               run: |
-                echo "Next Dev Version: ${{inputs.snapshot_version}}"
+                echo "Next Dev Version: ${{inputs.development_version}}"
                 echo "Next Release Version: ${{inputs.release_version}}"
             - name: Checkout Code Repository
               uses: actions/checkout@v4
@@ -59,13 +59,13 @@ jobs:
                 java-version: '21'
                 distribution: 'temurin'
             - name: Set Dev Version
-              run: mvn -B versions:set -DnewVersion=${{github.event.inputs.snapshot_version}}-SNAPSHOT -DgenerateBackupPoms=false
+              run: mvn -B versions:set -DnewVersion=${{github.event.inputs.development_version}}-SNAPSHOT -DgenerateBackupPoms=false
             - name: Commit & Push
               run: |
                 git add .
                 git config user.name fda_shield_omoruyi
                 git config user.email oomofonmwan93@gmail.com
-                git commit -m 'Set next dev version to ${{github.event.inputs.snapshot_version}}-SNAPSHOT'
+                git commit -m 'Set next dev version to ${{github.event.inputs.development_version}}-SNAPSHOT'
                 git push origin HEAD:main
                 git push --tags origin 
 

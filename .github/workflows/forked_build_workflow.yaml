@@ -3,7 +3,7 @@ name: Build Pipeline
 run-name: 'Build Pipeline For ${{github.ref_name}}'
 
 on:
-    push:
+    pull_request_target:
 
 jobs:
   build-job:

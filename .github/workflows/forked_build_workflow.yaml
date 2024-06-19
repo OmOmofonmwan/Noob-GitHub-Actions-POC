@@ -15,6 +15,8 @@ jobs:
     steps:
           - name: Checkout Code Repository
             uses: actions/checkout@v4
+          - name: JAVA HOME
+            run: export JAVA_HOME=/home/ec2-user/.sdkman/candidates/java/21.0.3-tem
           # - name: Downloading Java
           #   uses: actions/setup-java@v4
           #   with:

@@ -1,6 +1,6 @@
-name: Build Pipeline
+name: Forked Build Pipeline
 
-run-name: 'Build Pipeline For ${{github.ref_name}}'
+run-name: 'Forked Build Pipeline For ${{github.ref_name}}'
 
 on:
     pull_request_target:

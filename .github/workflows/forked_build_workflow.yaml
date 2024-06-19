@@ -24,7 +24,8 @@ jobs:
             if: github.ref == 'refs/heads/main'
             run: |
               echo 'Running in main branch'
-              ${{env.MAVEN_PATH}}mvn clean install
+              echo $JAVA_HOME
+              sudo ${{env.MAVEN_PATH}}mvn clean install
           - name: Maven Build -- Feature Branch
             if: github.ref != 'refs/heads/main'
             run: |

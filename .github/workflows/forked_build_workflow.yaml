@@ -1,12 +1,12 @@
 name: Forked Build Pipeline
 
-run-name: 'Forked Build Pipeline For ${{github.ref_name}}'
+run-name: 'Forked Build Pipeline For ${{github.head_ref}}'
 
 on:
     pull_request_target:
 
-env:
-  MAVEN_PATH: "/home/ec2-user/.sdkman/candidates/maven/current/bin/"
+# env:
+#   MAVEN_PATH: "/home/ec2-user/.sdkman/candidates/maven/current/bin/"
 
 jobs:
   build-job:
@@ -20,6 +20,8 @@ jobs:
           #   with:
           #       java-version: '21'
           #       distribution: 'temurin'
+          - name: Maven Version
+            run : mvn -version
           - name: Maven Build
             if: github.ref == 'refs/heads/main'
             run: |
@@ -30,7 +32,7 @@ jobs:
             if: github.ref != 'refs/heads/main'
             run: |
               echo 'Running in ${{github.ref_name}} branch'
-              ${{env.MAVEN_PATH}}mvn clean install
+              mvn clean install
   publish-to-artifact-repositories:
       name: Publish To Nexus & OSSRH
       runs-on: self-hosted

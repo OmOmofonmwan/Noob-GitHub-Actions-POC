@@ -14,9 +14,12 @@ jobs:
           - name: Print GitHUb
             run: |
                echo ${{github.head_ref}}
-               echo ${{github.event.base.repo.full_name}}
+               echo ${{toJson(github.event.base.repo)}}
           - name: Checkout Code Repository
             uses: actions/checkout@v4
+            with:
+              repository: ${{github.actor}}/Noob-GitHub-Actions-POC
+              path: ${{github.head_ref}}
           - name: Downloading Java
             uses: actions/setup-java@v4
             with:

@@ -5,8 +5,6 @@ run-name: 'Forked Build Pipeline For ${{github.head_ref}}'
 on:
     pull_request_target:
 
-env:
-  MAVEN_PATH: ~/.sdkman/candidates/maven/current/bin/
 
 jobs:
   build-job:

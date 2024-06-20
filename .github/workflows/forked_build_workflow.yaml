@@ -5,14 +5,14 @@ run-name: 'Forked Build Pipeline For ${{github.head_ref}}'
 on:
     pull_request_target:
 
-env:
-  MAVEN_PATH: ~/.sdkman/candidates/maven/current/bin/
 
 jobs:
   build-job:
     name: Build Job
     runs-on: ubuntu-latest
     steps:
+          - name: Print GitHUb
+            run: echo ${{toJson(github)}}
           - name: Checkout Code Repository
             uses: actions/checkout@v4
           - name: Downloading Java

@@ -3,7 +3,7 @@ name: Forked Build Pipeline
 run-name: 'Forked Build Pipeline For ${{github.head_ref}}'
 
 on:
-    pull_request_target:
+    pull_request:
 
 env:
   FORKED_REPO: ${{github.actor}}/Noob-GitHub-Actions-POC

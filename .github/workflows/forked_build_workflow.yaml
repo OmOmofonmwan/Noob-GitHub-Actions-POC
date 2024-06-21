@@ -8,6 +8,7 @@ on:
 env:
   FORKED_REPO: ${{github.actor}}/Noob-GitHub-Actions-POC
   HEAD_REF_BRANCH: ${{github.head_ref}}
+  IS_SNAPSHOT_VERSION: false
   TRUNK_BRANCH: 'main'
 
 
@@ -15,6 +16,8 @@ jobs:
   build-job:
     name: Build Job
     runs-on: ubuntu-latest
+    outputs:
+      pomVersion: ${{steps.get_current_version.outputs.POM_VERSION}}
     steps:
           - name: Checkout Code Repository
             uses: actions/checkout@v4
@@ -36,31 +39,23 @@ jobs:
             run: |
               echo 'Running in ${{github.ref_name}} branch'
               mvn clean install
-  publish-to-artifact-repositories:
-      name: Publish To Nexus & OSSRH
-      runs-on: self-hosted
-      needs: build-job
-      env:
-        REPOSITORY_ID: "maven-snapshots"
-      steps:
-        - name: Checkout Code Repository
-          uses: actions/checkout@v4
-          with:
-            repository: ${{env.FORKED_REPO}}
-            ref: ${{env.HEAD_REF_BRANCH}}
-        - name: Get Version
-          run: echo "POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-        - name: Print Current Version
-          run: echo "Current Version Is - ${{env.POM_VERSION}}"
-        - name: Check If Release Version
-          if: ${{ !contains(env.POM_VERSION, '-SNAPSHOT') }}
-          run: echo "REPOSITORY_ID=maven-release" >> $GITHUB_ENV
-        - name: Deploy To Nexus
-          run: |
-            echo "Deploy artifact to nexus - ${{env.REPOSITORY_ID}}"
-            echo "${{secrets.SNAPSHOT_SECRET}}" > snapshot-file-${{github.run_number}}.txt
-        - name: Deploy To OSSRH
-          if: ${{ env.REPOSITORY_ID == 'maven-release'}}
-          run: |
-           echo "Deploy aftifacts to OSSRH"
-           echo "${{secrets.SNAPSHOT_SECRET}}" > snapshot-file-${{github.run_number}}.txt
+          - name: Get Current Version
+            id: get_current_version
+            run: |
+              echo "POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+          - name: Is Snapshot Version
+            id: get_snapshot_version
+            if: ${{contains(env.POM_VERSION, '-SNAPSHOT')}}
+            run: echo "IS_SNAPSHOT_VERSION=true" >> $GITHUB_ENV
+          
+
+  publih-to-artifact-repositories:
+        name: Publish Artifacts WF
+        needs: build-job
+        permissions: write-all
+        uses: BasedNoobDevelopers/Noob-GitHub-Actions-POC/.github/workflows/publish_workflow.yaml@main
+        with:
+          is_snapshot_version: ${{env.IS_SNAPSHOT_VERSION}}
+          version_name: ${{jobs.build-job.outputs.pomVersion}}
+          repository_name: ${{env.FORKED_REPO}}
+          branch_name: ${{env.HEAD_REF_BRANCH}}

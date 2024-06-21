@@ -45,7 +45,7 @@ jobs:
               echo "POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
           - name: Is Snapshot Version
             id: get_snapshot_version
-            if: ${{contains(env.POM_VERSION, '-SNAPSHOT')}}
+            if: contains(${{env.POM_VERSION}}, '-SNAPSHOT')
             run: echo "IS_SNAPSHOT_VERSION=true" >> $GITHUB_ENV
           
 

@@ -6,7 +6,7 @@ on:
     workflow_call:
       inputs:
         is_snapshot_version:
-            type: boolean
+            type: string
             required: true
         version_name:
             type: string

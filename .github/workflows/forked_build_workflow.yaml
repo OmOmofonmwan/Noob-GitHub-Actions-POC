@@ -8,7 +8,7 @@ on:
 env:
   FORKED_REPO: ${{github.actor}}/Noob-GitHub-Actions-POC
   HEAD_REF_BRANCH: ${{github.head_ref}}
-  IS_SNAPSHOT_VERSION: false
+  IS_SNAPSHOT_VERSION: "false"
   TRUNK_BRANCH: 'main'
 
 

@@ -55,7 +55,7 @@ jobs:
         permissions: write-all
         uses: BasedNoobDevelopers/Noob-GitHub-Actions-POC/.github/workflows/publish_workflow.yaml@main
         with:
-          is_snapshot_version: ${{env.IS_SNAPSHOT_VERSION}}
-          version_name: ${{jobs.build-job.outputs.pomVersion}}
-          repository_name: ${{env.FORKED_REPO}}
-          branch_name: ${{env.HEAD_REF_BRANCH}}
+          is_snapshot_version: ${{github.env.IS_SNAPSHOT_VERSION}}
+          version_name: ${{needs.build-job.outputs.pomVersion}}
+          repository_name: ${{github.env.FORKED_REPO}}
+          branch_name: ${{github.env.HEAD_REF_BRANCH}}

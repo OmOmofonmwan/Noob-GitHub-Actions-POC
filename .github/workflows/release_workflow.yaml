@@ -17,6 +17,7 @@ env:
 jobs:
     initialization:
         runs-on: ubuntu-latest
+        name: Initialization
         outputs:
             NEXT_SNAPSHOT_VERSION: ${{steps.nextSnapshotVersion.outputs.SnapshotVersion}}
             RELEASE_VERSION: ${{steps.splitVersion.outputs._0}}
@@ -64,14 +65,15 @@ jobs:
                 echo "SnapshotVersion=${{steps.splitVersionMinor.outputs._0}}.$((${{steps.splitVersionMinor.outputs._1}} + 1)).${{steps.splitVersionMinor.outputs._2}}-SNAPSHOT" >> $GITHUB_OUTPUT
             - name: Print Information
               run: |
-                echo "Release Version -- ${{steps.splitVersion.outputs._0}}"
-                echo "Snapshot Version -- ${{steps.newSnapshotVersion.outputs.SnapshotVersion}}"
+                echo "Release Version -- ${{steps.splitCurrentVersion.outputs._0}}"
+                echo "Snapshot Version -- ${{steps.nextSnapshotVersion.outputs.SnapshotVersion}}"
                 echo "Branch Name -- ${{env.BRANCH_NAME}}"
                 
     
     set_build_and_tag_release:
         runs-on: ubuntu-latest
         needs: initialization
+        name: Set, Build & Tag Release Version
         permissions:
           contents: write
         steps:
@@ -85,7 +87,7 @@ jobs:
             - name: Set Release Version
               run: |
                 mvn -B versions:set \
-                 -DnewVersion=${{needs.initialization.outputs.RELEASE_VERSION}} \ 
+                 -DnewVersion=${{needs.initialization.outputs.RELEASE_VERSION}} \
                  -DgenerateBackupPoms=false
             # - name: Build Release Version
             #   run: | 
@@ -112,6 +114,7 @@ jobs:
             
     set_next_dev:
           runs-on: ubuntu-latest
+          name: Set Next Development Version
           needs: 
             - initialization
             - set_build_and_tag_release
@@ -128,14 +131,14 @@ jobs:
             - name: Set Dev Version
               run: |
                   mvn -B versions:set \
-                  -DnewVersion=${{needs.initialization.outputs.SNAPSHOT_VERSION}} \
+                  -DnewVersion=${{needs.initialization.outputs.NEXT_SNAPSHOT_VERSION}} \
                    -DgenerateBackupPoms=false
             - name: Commit & Push
               run: |
                 git add .
                 git config user.name fda_shield_omoruyi
                 git config user.email oomofonmwan93@gmail.com
-                git commit -m 'Set next dev version to ${{needs.initialization.outputs.SNAPSHOT_VERSION}}'
+                git commit -m 'Set next dev version to ${{needs.initialization.outputs.NEXT_SNAPSHOT_VERSION}}'
                 git push origin HEAD:main
                 git push --tags origin 
 

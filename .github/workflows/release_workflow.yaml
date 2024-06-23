@@ -22,7 +22,7 @@ jobs:
             RELEASE_VERSION: ${{steps.splitVersion.outputs._0}}
         steps:
             - name: Verify Branch
-              if: env.BRANCH_NAME != env.TRUNK_BRANCH_NAME || env.BRANCH_NAME != 'master'
+              if: env.BRANCH_NAME != env.TRUNK_BRANCH_NAME
               run: |
                 echo "ERROR: Attempting to release from branch ${{env.BRANCH_NAME}}. Release from ${{env.TRUNK_BRANCH_NAME}} branch only"
                 exit 1

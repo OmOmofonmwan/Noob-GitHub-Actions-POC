@@ -56,7 +56,7 @@ jobs:
               uses: xom9ikk/split@v1
               id: splitVersionMinor
               with:
-                string: ${{steps.splitVersion.outputs._0}}
+                string: ${{steps.splitCurrentVersion.outputs._0}}
                 separator: .
                 limit: -1
             - name: Increment Snapshot Version

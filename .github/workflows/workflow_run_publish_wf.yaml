@@ -15,57 +15,42 @@ on:
 jobs:
   initialize:
       name: Initialize
-
       runs-on: ubuntu-latest
-
       if: github.event.workflow_run.conclusion == 'success'
-
       env:
-        PUBLISH_REPOSITORY_ID: "maven-releases"
+        ARTIFACT_REPOSITORY_ID: "maven-releases"
         REPOSITORY_NAME: ${{github.repository}}
-        BRANCH: "main"
-
-      outputs:
-          ARTIFACT_REPO_ID: ${{env.PUBLISH_REPOSITORY_ID}}
-          REPO_NAME: ${{env.REPOSITORY_NAME}}
-          BRANCH_NAME: ${{env.BRANCH}}
-        
+        BRANCH: "main"  
       steps:
         - name: If Not Release Workflow Then Update Env
           if: github.event.workflow.name != 'Release Workflow'
           run: |
             echo "REPOSITORY_NAME=${{github.actor}}/${{github.event.repository.name}}" >> $GITHUB_ENV
-            echo "REPOSITORY_ID=${{github.actor}}/${{github.event.repository.name}}" >> $GITHUB_ENV
-            echo "PUBLISH_REPOSITORY_ID=maven-snapshots" >> $GITHUB_ENV
+            echo ${{github.event.head_branch}}
+            echo "BRANCH=${{github.event.head_branch}}" >> $GITHUB_ENV
+            echo "ARTIFACT_REPOSITORY_ID=maven-snapshots" >> $GITHUB_ENV
+        
+        - name: Checkout Code Repository
+          uses: actions/checkout@v4
+          with:
+            repository: ${{env.REPOSITORY_NAME}}
+            ref: ${{env.BRANCH}}
+
+        - name: Downloading Java
+          uses: actions/setup-java@v4
+          with:
+            java-version: '21'
+            distribution: 'adopt'
+
+        - name: Publish To Nexus Repository Manager
+          run: echo "Publishing to Nexus Repo -- ${{env.ARTIFACT_REPOSITORY_ID}}"
+
+        - name: Publish To OSSRH (Maven Central Staging)
+          if: env.ARTIFACT_REPOSITORY_ID == 'maven-releases'
+          run: echo "Publishint to OSSRH Repo -- ${{env.ARTIFACT_REPOSITORY_ID}}"
 
   
-  publish-artifacts:
-      name: Publish Artifacts
-      needs: initialize
-      runs-on: ubuntu-latest
-      steps:
-          - name: Checkout Code Repository -- ${{github.actor}}
-            uses: actions/checkout@v4
-            with:
-             repository: ${{needs.initialize.outputs.REPO_NAME}}
-             ref: ${{needs.initialize.outputs.BRANCH_NAME}}
 
-          - name: Downloading Java
-            uses: actions/setup-java@v4
-            with:
-              java-version: '21'
-              distribution: 'adopt'
-          
-          # - name: Get Version
-          #   id: get_current_version
-          #   run: echo "POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
-
-          - name: Publish To Nexus Repository Manager
-            run: echo "Publishing to Nexus Repo -- ${{needs.initialize.outputs.ARTIFACT_REPO_ID}}"
-
-          - name: Publish To OSSRH (Maven Central Staging)
-            if: needs.initialize.outputs.ARTIFACT_REPO_ID == 'maven-releases'
-            run: echo "Publishint to OSSRH Repo -- ${{needs.initialize.outputs.ARTIFACT_REPO_ID}}"
 
           
             

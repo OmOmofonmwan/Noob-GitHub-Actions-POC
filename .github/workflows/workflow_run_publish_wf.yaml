@@ -1,0 +1,43 @@
+name: Publish Pipeline -- Workflow Run Version
+
+run-name: 'Publish Artifacts For ${{github.ref_name}}'
+
+on:
+   workflow_run:
+    workflows:
+      - Forked Build Pipeline
+    types:
+      - completed
+        
+        
+   
+jobs:
+  publish-to-artifact-repositories:
+      name: Publish To Nexus & OSSRH
+      runs-on: ubuntu-latest
+      if: github.event.workflow_run.conclusion == 'success'
+      env:
+        REPOSITORY_ID: "maven-snapshots"
+      steps:
+        - name: Print GitHub Context
+          run: echo ${{toJson(github)}}
+        - name: Checkout Code Repository
+          uses: actions/checkout@v4
+          with:
+             repository: ${{inputs.repository_name}}
+             ref: ${{inputs.branch_name}}
+        - name: Downloading Java
+          uses: actions/setup-java@v4
+          with:
+              java-version: '21'
+              distribution: 'adopt'
+        - name: Print Current Version
+          run: echo "Current Version Is - ${{inputs.version_name}}"
+        - name: Check If Release Version
+          if: ${{ inputs.is_snapshot_version == 'false'}}
+          run: echo "REPOSITORY_ID=maven-release" >> $GITHUB_ENV
+        - name: Deploy To Nexus
+          run: echo "Deploy artifact to nexus - ${{env.REPOSITORY_ID}}"
+        - name: Deploy To OSSRH
+          if: ${{ inputs.is_snapshot_version == 'false'}}
+          run: echo "Deploy aftifacts to OSSRH

@@ -10,34 +10,62 @@ on:
       - completed
         
         
-   
 jobs:
-  publish-to-artifact-repositories:
-      name: Publish To Nexus & OSSRH
+  initialize:
+      name: Initialize
       runs-on: ubuntu-latest
       if: github.event.workflow_run.conclusion == 'success'
       env:
-        REPOSITORY_ID: "maven-snapshots"
+        PUBLISH_REPOSITORY_ID: "maven-releases"
+        REPOSITORY_NAME: ${{github.repository}}
+        BRANCH: "main"
+      outputs:
+          ARTIFACT_REPO_ID: ${{env.PUBLISH_REPOSITORY_ID}}
+          REPO_NAME: ${{env.REPOSITORY_NAME}}
+          BRANCH_NAME: ${{env.BRANCH}}
+        
       steps:
-        - name: Print GitHub Context
-          run: echo ${{toJson(github)}}
-        - name: Checkout Code Repository
-          uses: actions/checkout@v4
-          with:
-             repository: ${{inputs.repository_name}}
-             ref: ${{inputs.branch_name}}
-        - name: Downloading Java
-          uses: actions/setup-java@v4
-          with:
+        - name: If Pull Request Update Env
+          if: github.event.workflow_run.event == 'pull_request'
+          run: |
+            echo "REPOSITORY_NAME=${{github.actor}}/${{github.event.repository.name}}" >> $GITHUB_ENV
+            echo "REPOSITORY_ID=${{github.actor}}/${{github.event.repository.name}}" >> $GITHUB_ENV
+            echo "PUBLISH_REPOSITORY_ID=maven-snapshots" >> $GITHUB_ENV
+
+  
+  publish-artifacts:
+      name: Publish Artifacts
+      needs: initialize
+      runs-on: ubuntu-latest
+      steps:
+          - name: Checkout Code Repository -- ${{github.actor}}
+            uses: actions/checkout@v4
+            with:
+             repository: ${{needs.initialize.outputs.REPO_NAME}}
+             ref: ${{needs.initialize.outputs.BRANCH_NAME}}
+
+          - name: Downloading Java
+            uses: actions/setup-java@v4
+            with:
               java-version: '21'
               distribution: 'adopt'
-        - name: Print Current Version
-          run: echo "Current Version Is - ${{inputs.version_name}}"
-        - name: Check If Release Version
-          if: ${{ inputs.is_snapshot_version == 'false'}}
-          run: echo "REPOSITORY_ID=maven-release" >> $GITHUB_ENV
-        - name: Deploy To Nexus
-          run: echo "Deploy artifact to nexus - ${{env.REPOSITORY_ID}}"
-        - name: Deploy To OSSRH
-          if: ${{ inputs.is_snapshot_version == 'false'}}
-          run: echo "Deploy aftifacts to OSSRH
+          
+          # - name: Get Version
+          #   id: get_current_version
+          #   run: echo "POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+
+          - name: Publish To Nexus Repository Manager
+            run: echo "Publishing to Nexus Repo -- ${{needs.initialize.outputs.ARTIFACT_REPO_ID}}"
+
+          - name: Publish To OSSRH (Maven Central Staging)
+            if: needs.initialize.outputs.ARTIFACT_REPO_ID == 'maven-releases'
+            run: echo "Publishint to OSSRH Repo -- ${{needs.initialize.outputs.ARTIFACT_REPO_ID}}"
+
+          
+            
+
+
+
+  
+
+        

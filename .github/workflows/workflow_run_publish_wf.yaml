@@ -30,11 +30,16 @@ jobs:
             echo "BRANCH=${{github.event.head_branch}}" >> $GITHUB_ENV
             echo "ARTIFACT_REPOSITORY_ID=maven-snapshots" >> $GITHUB_ENV
         
-        - name: Checkout Code Repository
+        - name: Checkout Forked Code Repository
           uses: actions/checkout@v4
+          if: github.event.workflow.name == 'Forked Build Pipeline'
           with:
             repository: ${{env.REPOSITORY_NAME}}
             ref: ${{env.BRANCH}}
+
+        - name: Checkout Code Repository
+          if: github.event.workflow.name == 'Build Pipeline' || github.event.workflow.name == 'Release Workflow'
+          uses: actions/checkout@v4
 
         - name: Downloading Java
           uses: actions/setup-java@v4

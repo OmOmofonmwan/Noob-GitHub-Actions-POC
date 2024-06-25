@@ -26,6 +26,7 @@ jobs:
           if: github.event.workflow.name != 'Release Workflow'
           run: |
             echo "REPOSITORY_NAME=${{github.actor}}/${{github.event.repository.name}}" >> $GITHUB_ENV
+            echo ${{toJson(github.event.repository)}}
             echo ${{github.event.repository.head_branch}}
             echo "BRANCH=${{github.event.repository.head_branch}}" >> $GITHUB_ENV
             echo "ARTIFACT_REPOSITORY_ID=maven-snapshots" >> $GITHUB_ENV

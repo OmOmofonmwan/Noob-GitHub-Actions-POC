@@ -1,6 +1,6 @@
 name: Publish Pipeline -- Workflow Run Version
 
-run-name: 'Publish Artifacts For ${{github.ref_name}}'
+run-name: 'Publish Artifacts'
 
 on:
    workflow_run:

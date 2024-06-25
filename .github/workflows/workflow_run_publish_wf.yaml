@@ -6,7 +6,7 @@ on:
    workflow_run:
     workflows:
       - Forked Build Pipeline
-      - Release Pipeline
+      - Release Workflow
     types:
       - completed
         

@@ -25,9 +25,6 @@ jobs:
           BRANCH_NAME: ${{env.BRANCH}}
         
       steps:
-        - name: Print GitHub Context
-          run: echo ${{toJson(github)}}
-
         - name: If Pull Request Update Env
           if: github.event.workflow_run.event == 'pull_request'
           run: |

@@ -64,8 +64,8 @@ jobs:
               uses: devops-infra/action-pull-request@v0.5.5
               with:
                 github_token: ${{ secrets.GITHUB_TOKEN }}
-                source_branch: ikmdev/demo-java-maven::${{env.FEATURE_BRANCH}}
-                target_branch: ${{env.TRUNK_BRANCH}}
+                source_branch: ${{env.FEATURE_BRANCH}}
+                target_branch: BasedNoobDevelopers/Noob-GitHub-Actions-POC::${{env.TRUNK_BRANCH}}
                 title: Draft - ${{env.FEATURE_BRANCH}}
                 body: "**Currently work in progress - ${{env.FEATURE_BRANCH}}**"
                 draft: true

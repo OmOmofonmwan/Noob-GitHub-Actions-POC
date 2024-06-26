@@ -47,15 +47,4 @@ jobs:
             id: get_snapshot_version
             if: contains(${{env.POM_VERSION}}, '-SNAPSHOT')
             run: echo "IS_SNAPSHOT_VERSION=true" >> $GITHUB_ENV
-          
-
-  # publih-to-artifact-repositories:
-  #       name: Publish Artifacts WF
-  #       needs: build-job
-  #       permissions: write-all
-  #       uses: BasedNoobDevelopers/Noob-GitHub-Actions-POC/.github/workflows/publish_workflow.yaml@main
-  #       with:
-  #         is_snapshot_version: ${{needs.build-job.outputs.isSnapshot}}
-  #         version_name: ${{needs.build-job.outputs.pomVersion}}
-  #         repository_name: ${{needs.build-job.outputs.repoName}}
-  #         branch_name: ${{needs.build-job.outputs.branchName}}
+      
